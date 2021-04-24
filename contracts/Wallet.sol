@@ -9,7 +9,7 @@ pragma solidity ^0.8.0;
 import "../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol/";
 import "../node_modules/@openzeppelin/contracts/access/Ownable.sol/";
 
-contract Wallet is Ownable{
+contract Wallet is Ownable {
 
     struct Token {
         bytes32 ticker;
@@ -37,7 +37,7 @@ contract Wallet is Ownable{
     }
 
     function withdraw(uint _amount, bytes32 _ticker) external isToken(_ticker) {
-        require(balances[msg.sender][_ticker] >= _amount, "Not enough money.");
+        require(balances[msg.sender][_ticker] >= _amount, "Not enough money to withdraw.");
         balances[msg.sender][_ticker] -= _amount;
         IERC20(tokenMapping[_ticker].tokenAddress).transfer(msg.sender,_amount);
     }
