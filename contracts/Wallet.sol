@@ -18,6 +18,8 @@ contract Wallet is Ownable {
 
     bytes32[] public tokenList;
 
+    mapping (address => uint) public weiBalances;
+
     mapping(bytes32 => Token) public tokenMapping;
     mapping(address => mapping(bytes32 => uint256)) public balances;
 
@@ -34,6 +36,10 @@ contract Wallet is Ownable {
     function deposit(uint _amount, bytes32 _ticker) external isToken(_ticker) {
         IERC20(tokenMapping[_ticker].tokenAddress).transferFrom(msg.sender, address(this), _amount);
         balances[msg.sender][_ticker] += _amount;
+    }
+
+    function depositWei(uint _amount) public payable {
+        weiBalances[msg.sender] += _amount;
     }
 
     function withdraw(uint _amount, bytes32 _ticker) external isToken(_ticker) {
