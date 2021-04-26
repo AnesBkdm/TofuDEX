@@ -38,8 +38,8 @@ contract Wallet is Ownable {
         balances[msg.sender][_ticker] += _amount;
     }
 
-    function depositWei(uint _amount) public payable {
-        weiBalances[msg.sender] += _amount;
+    function depositWei() public payable {
+        weiBalances[msg.sender] += msg.value;
     }
 
     function withdraw(uint _amount, bytes32 _ticker) external isToken(_ticker) {
