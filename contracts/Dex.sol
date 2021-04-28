@@ -28,24 +28,77 @@ contract Dex is Wallet {
         return orderBook[ticker][uint(side)];
     }
 
-    // function getOrderInfo (bytes32 i, uint j) public pure returns (uint id_, address trader_, bool buyOrder_, bytes32 ticker_, uint amount_, uint price_){
-    //     return (orderBook[i][j].id, orderBook[i][j].trader, orderBook[i][j].buyOrder, orderBook[i][j].ticker, orderBook[i][j].amount, orderBook[i][j].price);
-    // }
+    function createMarketOrder(Side _side, bytes32 _ticker, uint _amount) public {
+        
+        if(_side == Side.SELL){
+            require(balances[msg.sender][_ticker] >= _amount, "Not enough tokens to make trade");
+        }
 
-    function emptyOrderBook(Side _side, bytes32 _ticker) public {
-        Order[] memory o;
-        orderBook[_ticker][uint(_side)] = o;
+        uint orderBookSide;
+
+        if(_side == Side.BUY){
+            orderBookSide = 1;
+        } else {
+            orderBookSide = 0;
+        }
+
+        Order[] storage orders = orderBook[_ticker][orderBookSide];
+
+        uint totalFilled;
+        uint toFill;
+
+        for (uint256 i = 0; i < orders.length && totalFilled < _amount; i++) {
+            
+            if(totalFilled + orders[i].amount <= _amount){
+                toFill = orders[i].amount;
+            } else if (totalFilled + orders[i].amount > _amount){
+                toFill = orders[i].amount - totalFilled;
+            }
+
+            if(_side == Side.BUY){
+                
+                require(weiBalances[msg.sender] >= toFill * orders[i].price, "You don't have enough ETH to make trade");
+                
+                weiBalances[msg.sender] -= toFill * orders[i].price;
+                weiBalances[orders[i].trader] += toFill * orders[i].price;
+
+                balances[msg.sender][_ticker] += toFill;
+                balances[orders[i].trader][_ticker] -= toFill;
+
+            } else if (_side == Side.SELL) {
+                
+                require(weiBalances[orders[i].trader] >= toFill * orders[i].price, "LIMIT ORDER trader doesn't have enough ETH to make trade");
+                
+                weiBalances[msg.sender] += toFill * orders[i].price;
+                weiBalances[orders[i].trader] -= toFill * orders[i].price;
+
+                balances[msg.sender][_ticker] -= toFill;
+                balances[orders[i].trader][_ticker] += toFill;
+
+            }
+
+            totalFilled += toFill;
+
+            orders[i].amount = toFill;
+
+        }
+    
+        // Removing filled orders
+        while(orders.length > 0 && orders[0].amount == 0) { // Solidity first checks condition 1 then 2
+            for (uint256 i = 0; i < orders.length-1; i++) {
+                orders[i] = orders[i+1];
+            }
+            orders.pop();
+        }
+
     }
 
-    // function createMarketOrder(Side _side, bytes32 _ticker, uint _amount) public {
-    //     _;
-    // }
-
+    
     function createLimitOrder(Side _side, bytes32 _ticker, uint _amount, uint _price) public {
+
         if(_side == Side.BUY){
             require(weiBalances[msg.sender] >= _amount * _price);
         }
-
         if(_side == Side.SELL){
             require(balances[msg.sender][_ticker] >= _amount);
         }

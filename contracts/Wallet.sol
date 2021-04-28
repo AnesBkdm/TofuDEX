@@ -18,10 +18,9 @@ contract Wallet is Ownable {
 
     bytes32[] public tokenList;
 
-    mapping (address => uint) public weiBalances;
-
     mapping(bytes32 => Token) public tokenMapping;
-    mapping(address => mapping(bytes32 => uint256)) public balances;
+    mapping(address => mapping(bytes32 => uint)) public balances;
+    mapping (address => uint) public weiBalances;
 
     modifier isToken(bytes32 _ticker) {
         require(tokenMapping[_ticker].tokenAddress != address(0), "Token doesn't exist in Tofu.");
@@ -46,6 +45,14 @@ contract Wallet is Ownable {
         require(balances[msg.sender][_ticker] >= _amount, "Not enough money to withdraw.");
         balances[msg.sender][_ticker] -= _amount;
         IERC20(tokenMapping[_ticker].tokenAddress).transfer(msg.sender,_amount);
+    }
+
+    function getTokenBalance(bytes32 _ticker) public view returns (uint) {
+        return balances[msg.sender][_ticker];
+    }
+
+    function getWeiBalance() public view returns (uint){
+        return weiBalances[msg.sender];
     }
 }
 
