@@ -1,0 +1,26 @@
+{
+  "name": "tofudex",
+  "version": "1.0.0",
+  "description": "",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AnesBkdm/TofuDEX.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AnesBkdm/TofuDEX/issues"
+  },
+  "homepage": "https://github.com/AnesBkdm/TofuDEX#readme",
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.0.0",
+    "truffle-assertions": "^0.9.2"
+  }
+}

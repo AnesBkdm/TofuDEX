@@ -1,6 +1,7 @@
-/node_modules
-/migrations
-/contracts/Migrations.sol
-truffle-config.js
-package.json
-package-lock.json
+# /node_modules
+# /migrations
+# /contracts/Migrations.sol
+# truffle-config.js
+# package.json
+# package-lock.json
+.gitignore

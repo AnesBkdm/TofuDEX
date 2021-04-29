@@ -22,7 +22,7 @@ contract("Dex", accounts => {
         let tst = await TestToken.deployed();
 
         await tst.approve(dex.address, 5000);
-        await dex.deposit(1000, web3.utils.fromUtf8("TST"));
+        await dex.depositToken(1000, web3.utils.fromUtf8("TST"));
         let balance = await dex.balances(accounts[0], web3.utils.fromUtf8("TST"));
         assert.equal(balance.toNumber(),1000);
     })
